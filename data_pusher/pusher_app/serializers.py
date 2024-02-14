@@ -1,4 +1,9 @@
+# Standard imports here:
+
+# Third party imports here:
 from rest_framework.serializers import ModelSerializer, ValidationError
+
+# Local imports here:
 from .models import Account, Destination
 
 
@@ -9,6 +14,7 @@ class AccountSerializer(ModelSerializer):
         read_only_fields = ["secret_token", "account_id"]
 
 
+# To make sure that headers is not null as that is also a valid JSON:
 class NotNullValidator:
     require_context = True
 

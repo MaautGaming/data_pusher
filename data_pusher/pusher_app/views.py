@@ -1,4 +1,7 @@
+# Standard imports here:
 from json import dumps
+
+# Third party imports here:
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,6 +11,7 @@ from rest_framework.status import (
     HTTP_401_UNAUTHORIZED,
 )
 
+# Local imports here:
 from .models import Account, Destination
 from .serializers import AccountSerializer, DestinationSerializer
 from .utility import hit_destination_url_with_data
@@ -15,11 +19,19 @@ from .utility import hit_destination_url_with_data
 
 # Create your views here.
 class AccountViewSet(ModelViewSet):
+    """
+    ViewSet to create Account related APIs:
+    """
+
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
 
 
 class DestinationViewSet(ModelViewSet):
+    """
+    ViewSet to create Destination related APIs:
+    """
+
     queryset = Destination.objects.all()
     serializer_class = DestinationSerializer
 
@@ -37,12 +49,10 @@ class TriggerView(APIView):
         secret_token = request.headers.get("Cl-X-TOKEN")
         if not secret_token or not Account.objects.filter(secret_token=secret_token):
             return Response(status=HTTP_401_UNAUTHORIZED, data="Un Authenticated")
-        # Checking if the given data contains valid json or not:
-        if not (type(request.data)) in {dict, list} or not request.data:
-            return Response(status=HTTP_400_BAD_REQUEST, data="Invalid Data")
-        #
-        destination_response_counts: dict = hit_destination_url_with_data(
-            secret_token, request.data
-        )
 
+        # Hit all the url of the account:
+        destination_response_counts: dict = hit_destination_url_with_data(
+            secret_token, {"data": request.data}
+        )
+        # If everything works fine return 201 status:
         return Response(status=HTTP_201_CREATED, data=destination_response_counts)
